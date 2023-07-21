@@ -1,14 +1,13 @@
 <template>
-    <table>
-        <tr :key="index" v-for="(data, index) in posts">
-            <td>{{data.id}}</td>
-            <td>{{data.url}}</td>
-            <td>{{data.title}}</td>
-            <td>
-                <input type="button" value="재알림" @click="reAlert(data.id)">
-            </td>
-        </tr>
-    </table>
+    <div class="list-group">
+        <a href="#" class="list-group-item list-group-item-action" :key="index" v-for="(data, index) in posts">
+            <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">{{data.title}} {{data.price}}</h5>
+            <small class="text-body-secondary"><input type="button" value="재알림" @click="reAlert(data.id)"></small>
+            </div>
+            <p class="mb-1" @click="redirectUrl(data.url)">{{data.small_url}}</p>
+        </a>
+    </div>
 </template>
 
 <script>
@@ -23,9 +22,12 @@ export default {
     methods: {
         async getData() {
             try {
-                axios.get('http://172.30.1.1:5000/list', { responseType: 'json' }).then((response) => {
+                axios.get('http://121.129.205.223:5000/list', { responseType: 'json' }).then((response) => {
                     console.log(response.data)
                     this.posts = response.data
+                    this.posts.forEach(item => {
+                        item.small_url = item.url.substring(0, 40) + "..";
+                    });
                 })
             } catch (error) {
                 console.log(error);
@@ -33,7 +35,7 @@ export default {
         },
         reAlert(id) {
             try {
-                axios.get('http://172.30.1.1:5000/delete/' + id).then((response) => {
+                axios.get('http://121.129.205.223:5000/delete/' + id).then((response) => {
                     
                     console.log(response.data)
                     if (response.data == '1') {
@@ -45,6 +47,9 @@ export default {
             } catch (error) {
                 console.log(error);
             }
+        },
+        redirectUrl(url) {
+            window.open(url, "_blank");
         }
     },
     mounted() {
